@@ -10,34 +10,16 @@
 
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
+import debounce from './utils/debounce'
+
+const debouncedSearch = debounce((value: string) => {
+  console.log('Searched for:', value)
+}, 300)
 
 const handleSearchInput = (event: Event) => {
-  // debounce the input event and call the search function
   const input = event.target as HTMLInputElement
   const searchValue = input.value
 
-  // Call your search function here
-  console.log('Searching for:', searchValue)
-  // You can also use a debounce function to limit the number of calls
-  // to the search function while the user is typing
-  // For example, you can use lodash's debounce function
-  // const debouncedSearch = debounce((value) => {
-  //   console.log('Searching for:', value)
-  // }, 300)
-  // debouncedSearch(searchValue)
-  // Or you can implement your own debounce function
-  // const debounce = (func: Function, delay: number) => {
-  //   let timeout: NodeJS.Timeout
-  //   return (...args: any[]) => {
-  //     clearTimeout(timeout)
-  //     timeout = setTimeout(() => {
-  //       func.apply(this, args)
-  //     }, delay)
-  //   }
-  // }
-  // const debouncedSearch = debounce((value: string) => {
-  //   console.log('Searching for:', value)
-  // }, 300)
-  // debouncedSearch(searchValue)
+  debouncedSearch(searchValue)
 }
 </script>
