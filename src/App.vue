@@ -1,85 +1,43 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div class="h-screen grid gap-4 p-4">
+    <Input
+      class="bg-white"
+      @input="handleSearchInput"
+      placeholder="Search for a name, symbol or keyword, e.g. ASX"
+    ></Input>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<script setup lang="ts">
+import { Input } from '@/components/ui/input'
+
+const handleSearchInput = (event: Event) => {
+  // debounce the input event and call the search function
+  const input = event.target as HTMLInputElement
+  const searchValue = input.value
+
+  // Call your search function here
+  console.log('Searching for:', searchValue)
+  // You can also use a debounce function to limit the number of calls
+  // to the search function while the user is typing
+  // For example, you can use lodash's debounce function
+  // const debouncedSearch = debounce((value) => {
+  //   console.log('Searching for:', value)
+  // }, 300)
+  // debouncedSearch(searchValue)
+  // Or you can implement your own debounce function
+  // const debounce = (func: Function, delay: number) => {
+  //   let timeout: NodeJS.Timeout
+  //   return (...args: any[]) => {
+  //     clearTimeout(timeout)
+  //     timeout = setTimeout(() => {
+  //       func.apply(this, args)
+  //     }, delay)
+  //   }
+  // }
+  // const debouncedSearch = debounce((value: string) => {
+  //   console.log('Searching for:', value)
+  // }, 300)
+  // debouncedSearch(searchValue)
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+</script>
