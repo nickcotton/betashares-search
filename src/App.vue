@@ -52,20 +52,25 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useSearch } from '@/composables/useSearch'
 import debounce from './utils/debounce'
-import { onMounted, ref } from 'vue'
+import { watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 const query = ref(route.query.q?.toString() || '')
 
-onMounted(() => {
-  if (query.value) {
-    search({ search_text: query.value })
-  }
-})
-
 const { loading, results, total, search } = useSearch()
+
+watch(
+  () => route.query.q,
+  (newQ) => {
+    query.value = newQ?.toString() || ''
+    if (query.value) {
+      search({ search_text: query.value })
+    }
+  },
+  { immediate: true },
+)
 
 const debouncedSearch = debounce((value: string) => {
   console.log('Searched for:', value)
