@@ -12,10 +12,11 @@
       <Button @click="submitSearch">Search</Button>
     </div>
     <div v-if="loading" class="text-center">
-      <p>Loading...</p>
+      <ul class="grid gap-3">
+        <li v-for="num in PAGE_SIZE" class="h-31 bg-white rounded-xl"></li>
+      </ul>
     </div>
     <div v-else-if="results.length">
-      {{ total }} results found
       <ul class="grid gap-3">
         <li
           class="bg-card text-card-foreground p-4 gap-6 rounded-xl border shadow-sm"
@@ -23,9 +24,14 @@
           :key="result.symbol"
         >
           <div class="flex gap-4">
-            <div class="flex-1">
-              <p>{{ result.symbol }}</p>
-              <h2>{{ result.display_name }}</h2>
+            <div class="flex-1 flex flex-col gap-1">
+              <p class="self-start bg-brand-orange text-white text-sm px-2 py-0.5 rounded-xs">
+                {{ result.symbol }}
+              </p>
+              <h2 class="text-2xl">{{ result.display_name }}</h2>
+              <p v-if="result.flagship_description_short" class="text-gray-400 text-sm">
+                {{ result.flagship_description_short }}
+              </p>
             </div>
             <div class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm">
               <p class="text-gray-400 text-sm font-medium">Size</p>
@@ -62,6 +68,31 @@
           </div>
         </li>
       </ul>
+      <div v-if="total > PAGE_SIZE" class="flex items-baseline justify-center gap-4 pt-4">
+        <Button
+          variant="outline"
+          class="select-none"
+          @click="prevPage"
+          :disabled="currentPage === 1"
+        >
+          Previous
+        </Button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <Button
+          variant="outline"
+          class="select-none"
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+    <div v-else class="text-center">
+      <p>No results found</p>
+      <p class="text-gray-400">Try searching for a name, symbol or keyword, e.g. ASX</p>
     </div>
   </div>
 </template>
@@ -72,22 +103,34 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useSearch } from '@/composables/useSearch'
 import debounce from './utils/debounce'
-import { watch, ref } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 const query = ref(route.query.q?.toString() || '')
+const currentPage = ref(Number(route.query.page) || 1)
+const PAGE_SIZE = 15
 
 const { loading, results, total, search } = useSearch()
 
 watch(
-  () => route.query.q,
-  (newQ) => {
-    query.value = newQ?.toString() || ''
-    if (query.value) {
-      search({ search_text: query.value })
+  currentPage,
+  (page) => {
+    const params = {
+      search_text: query.value,
+      from: page,
+      size: PAGE_SIZE,
     }
+
+    router.replace({
+      query: {
+        ...route.query,
+        page: String(page),
+      },
+    })
+
+    search(params)
   },
   { immediate: true },
 )
@@ -104,6 +147,12 @@ const handleSearchInput = (event: Event) => {
 }
 
 const submitSearch = () => {
+  const params = {
+    search_text: query.value,
+    from: 1,
+    size: PAGE_SIZE,
+  }
+
   router.replace({
     query: {
       ...route.query,
@@ -111,7 +160,7 @@ const submitSearch = () => {
       page: '1',
     },
   })
-  search({ search_text: query.value })
+  search(params)
 }
 
 const formatSize = (value: string | null | undefined): string => {
@@ -132,5 +181,19 @@ const formatSize = (value: string | null | undefined): string => {
 const formatPerformance = (value: string) => {
   if (value === null || value === undefined) return 'N/A'
   return parseFloat(value).toFixed(2) + '%'
+}
+
+const totalPages = computed(() => Math.ceil(total.value / PAGE_SIZE))
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1
+  }
+}
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1
+  }
 }
 </script>
