@@ -1,6 +1,7 @@
 <template>
   <div class="h-screen grid gap-4 p-4">
-    <div class="flex gap-3">
+    <div class="flex gap-4">
+      <BetasharesLogo class="h-8" />
       <Input
         class="bg-white"
         v-model="query"
@@ -46,11 +47,12 @@
 </template>
 
 <script setup lang="ts">
+import BetasharesLogo from '@/assets/logo.svg'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useSearch } from '@/composables/useSearch'
 import debounce from './utils/debounce'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
