@@ -16,7 +16,11 @@
         <li v-for="num in PAGE_SIZE" class="h-31 bg-white rounded-xl"></li>
       </ul>
     </div>
-    <div v-else-if="results.length">
+    <div v-else-if="results?.length === 0" class="text-center">
+      <p>No results found</p>
+      <p class="text-gray-400">Try searching for a name, symbol or keyword, e.g. ASX</p>
+    </div>
+    <div v-else-if="results?.length">
       <ul class="grid gap-3">
         <li
           class="bg-card text-card-foreground p-4 gap-6 rounded-xl border shadow-sm"
@@ -91,7 +95,7 @@
       </div>
     </div>
     <div v-else class="text-center">
-      <p>No results found</p>
+      <p>Search</p>
       <p class="text-gray-400">Try searching for a name, symbol or keyword, e.g. ASX</p>
     </div>
   </div>
@@ -114,26 +118,22 @@ const PAGE_SIZE = 15
 
 const { loading, results, total, search } = useSearch()
 
-watch(
-  currentPage,
-  (page) => {
-    const params = {
-      search_text: query.value,
-      from: page,
-      size: PAGE_SIZE,
-    }
+watch(currentPage, (page) => {
+  const params = {
+    search_text: query.value,
+    from: page,
+    size: PAGE_SIZE,
+  }
 
-    router.replace({
-      query: {
-        ...route.query,
-        page: String(page),
-      },
-    })
+  router.replace({
+    query: {
+      ...route.query,
+      page: String(page),
+    },
+  })
 
-    search(params)
-  },
-  { immediate: true },
-)
+  search(params)
+})
 
 const debouncedSearch = debounce((value: string) => {
   console.log('Searched for:', value)

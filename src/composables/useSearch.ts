@@ -5,7 +5,7 @@ const API_URL = '/api/search'
 
 export function useSearch() {
   const loading = ref(false)
-  const results = ref([])
+  const results = ref(null)
   const total = ref(0)
 
   const search = async (params = {}) => {
