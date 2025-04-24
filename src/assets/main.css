@@ -1,7 +1,11 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-brand-orange: #fc4d16;
+}
 
 @theme inline {
   --color-background: var(--background);
