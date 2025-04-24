@@ -27,17 +27,37 @@
               <p>{{ result.symbol }}</p>
               <h2>{{ result.display_name }}</h2>
             </div>
-            <div class="">
-              <p>Size</p>
-              <p>{{ formatSize(result.fund_size) }}</p>
+            <div class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm">
+              <p class="text-gray-400 text-sm font-medium">Size</p>
+              <p class="text-2xl tabular-nums">{{ formatSize(result.fund_size) }}</p>
             </div>
-            <div class="">
-              <p>1y</p>
-              <p>{{ formatPerformance(result.one_year_return) }}</p>
+            <div
+              class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm min-w-32"
+            >
+              <p class="text-gray-400 text-sm font-medium">1y</p>
+              <p
+                class="text-2xl tabular-nums"
+                :class="{
+                  'text-green-600': result.one_year_return > 0,
+                  'text-red-600': result.one_year_return < 0,
+                }"
+              >
+                {{ formatPerformance(result.one_year_return) }}
+              </p>
             </div>
-            <div class="">
-              <p>5y</p>
-              <p>{{ formatPerformance(result.five_year_return) }}</p>
+            <div
+              class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm min-w-32"
+            >
+              <p class="text-gray-400 text-sm font-medium">5y</p>
+              <p
+                class="text-2xl tabular-nums"
+                :class="{
+                  'text-green-600': result.five_year_return > 0,
+                  'text-red-600': result.five_year_return < 0,
+                }"
+              >
+                {{ formatPerformance(result.five_year_return) }}
+              </p>
             </div>
           </div>
         </li>
