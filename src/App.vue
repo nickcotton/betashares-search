@@ -72,27 +72,13 @@
           </div>
         </li>
       </ul>
-      <div v-if="total > PAGE_SIZE" class="flex items-baseline justify-center gap-4 pt-4">
-        <Button
-          variant="outline"
-          class="select-none"
-          @click="prevPage"
-          :disabled="currentPage === 1"
-        >
-          Previous
-        </Button>
-
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-
-        <Button
-          variant="outline"
-          class="select-none"
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-        >
-          Next
-        </Button>
-      </div>
+      <SearchResultsPagination
+        v-if="total > PAGE_SIZE"
+        :total-pages
+        :current-page
+        @prevPage="prevPage"
+        @nextPage="nextPage"
+      ></SearchResultsPagination>
     </div>
     <div v-else class="text-center">
       <p>Search</p>
@@ -109,6 +95,7 @@ import { useSearch } from '@/composables/useSearch'
 import debounce from './utils/debounce'
 import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import SearchResultsPagination from '@/components/SearchResultsPagination.vue'
 
 const route = useRoute()
 const router = useRouter()
