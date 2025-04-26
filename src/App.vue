@@ -2,13 +2,27 @@
   <div class="grid gap-4 p-4">
     <div class="flex gap-4">
       <BetasharesLogo class="h-8" />
-      <Input
-        class="bg-white"
-        v-model="query"
-        @input="handleSearchInput"
-        @keydown.enter="submitSearch"
-        placeholder="Search for a name, symbol or keyword, e.g. ASX"
-      ></Input>
+      <div class="flex-1 relative z-10">
+        <Input
+          class="bg-white"
+          v-model="query"
+          @input="handleSearchInput"
+          @keydown.enter="submitSearch"
+          placeholder="Search for a name, symbol or keyword, e.g. ASX"
+        ></Input>
+        <ul
+          v-if="filteredSuggestions.length"
+          class="absolute top-full bg-white rounded-md shadow-md mt-2 max-h-64 w-96 overflow-auto"
+        >
+          <li
+            v-for="suggestion in filteredSuggestions"
+            :key="suggestion"
+            class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            @click="selectSuggestion(suggestion)"
+            v-html="highlightMatch(suggestion)"
+          ></li>
+        </ul>
+      </div>
       <Button @click="submitSearch">Search</Button>
     </div>
     <SearchFilters
@@ -103,9 +117,11 @@ import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchFilters from '@/components/SearchFilters.vue'
 import SearchResultsPagination from '@/components/SearchResultsPagination.vue'
+import popularSearchTerms from '@/lib/popular-searches.json'
 
 const route = useRoute()
 const router = useRouter()
+const suggestions = ref<string[]>(popularSearchTerms)
 const query = ref(route.query.q?.toString() || '')
 const currentPage = ref(Number(route.query.page) || 1)
 const sort = ref(route.query.sort?.toString() || 'symbol.asc')
@@ -158,6 +174,39 @@ watch(results, (newResults) => {
 const debouncedSearch = debounce((value: string) => {
   console.log('Searched for:', value)
 }, 300)
+
+const filteredSuggestions = computed(() => {
+  const term = query.value.toLowerCase().trim()
+
+  if (term.length < 2) {
+    return []
+  }
+
+  return popularSearchTerms
+    .filter((suggestion) => suggestion.toLowerCase().startsWith(term))
+    .slice(0, 8)
+})
+
+const selectSuggestion = (suggestion: string) => {
+  query.value = suggestion
+  submitSearch()
+}
+
+const highlightMatch = (suggestion: string) => {
+  const term = query.value.toLowerCase().trim()
+  if (!term) return suggestion
+
+  const lowerSuggestion = suggestion.toLowerCase()
+  const index = lowerSuggestion.indexOf(term)
+
+  if (index === -1) return suggestion
+
+  const before = suggestion.slice(0, index)
+  const match = suggestion.slice(index, index + term.length)
+  const after = suggestion.slice(index + term.length)
+
+  return `${before}<strong class="text-brand-orange">${match}</strong>${after}`
+}
 
 const handleSearchInput = (event: Event) => {
   const input = event.target as HTMLInputElement
