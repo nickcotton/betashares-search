@@ -6,7 +6,6 @@
         <Input
           class="bg-white"
           v-model="query"
-          @input="handleSearchInput"
           @keydown.enter="submitSearch"
           @focus="searchInputFocused = true"
           @blur="handleBlur"
@@ -114,7 +113,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useSearch } from '@/composables/useSearch'
 import { useFilters } from '@/composables/useFilters'
-import debounce from './utils/debounce'
 import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchFilters from '@/components/SearchFilters.vue'
@@ -123,7 +121,6 @@ import popularSearchTerms from '@/lib/popular-searches.json'
 
 const route = useRoute()
 const router = useRouter()
-const suggestions = ref<string[]>(popularSearchTerms)
 const query = ref(route.query.q?.toString() || '')
 const currentPage = ref(Number(route.query.page) || 1)
 const sort = ref(route.query.sort?.toString() || 'symbol.asc')
@@ -174,10 +171,6 @@ watch(results, (newResults) => {
   }
 })
 
-const debouncedSearch = debounce((value: string) => {
-  console.log('Searched for:', value)
-}, 300)
-
 const filteredSuggestions = computed(() => {
   const term = query.value.toLowerCase().trim()
 
@@ -209,13 +202,6 @@ const highlightMatch = (suggestion: string) => {
   const after = suggestion.slice(index + term.length)
 
   return `${before}<strong class="text-brand-orange">${match}</strong>${after}`
-}
-
-const handleSearchInput = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const searchValue = input.value
-
-  debouncedSearch(searchValue)
 }
 
 const submitSearch = () => {
