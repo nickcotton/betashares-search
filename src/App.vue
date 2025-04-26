@@ -202,6 +202,7 @@ const formatSize = (value: string | null | undefined): string => {
 
   const size = num * 1_000_000
 
+  if (size >= 1e12) return `$${(size / 1e12).toFixed(2)}T`
   if (size >= 1e9) return `$${(size / 1e9).toFixed(2)}B`
   if (size >= 1e6) return `$${(size / 1e6).toFixed(2)}M`
   if (size >= 1e3) return `$${(size / 1e3).toFixed(2)}K`
