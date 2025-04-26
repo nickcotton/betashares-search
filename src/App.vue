@@ -28,7 +28,7 @@
           v-for="result in results"
           :key="result.symbol"
         >
-          <div class="flex gap-4">
+          <div class="flex items-start gap-4">
             <div class="flex-1 flex flex-col gap-1">
               <p class="self-start bg-brand-orange text-white text-sm px-2 py-0.5 rounded-xs">
                 {{ result.symbol }}
@@ -38,14 +38,12 @@
                 {{ result.flagship_description_short }}
               </p>
             </div>
-            <div class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm">
-              <p class="text-gray-400 text-sm font-medium">Size</p>
+            <div class="grid gap-1 text-right min-w-32">
+              <p class="text-gray-300 text-sm font-medium">Size</p>
               <p class="text-2xl tabular-nums">{{ formatSize(result.fund_size) }}</p>
             </div>
-            <div
-              class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm min-w-32"
-            >
-              <p class="text-gray-400 text-sm font-medium">1y</p>
+            <div class="grid gap-1 text-right min-w-32">
+              <p class="text-gray-300 text-sm font-medium">1y</p>
               <p
                 class="text-2xl tabular-nums"
                 :class="{
@@ -56,10 +54,8 @@
                 {{ formatPerformance(result.one_year_return) }}
               </p>
             </div>
-            <div
-              class="grid gap-1 bg-card text-card-foreground p-4 rounded-sm border shadow-sm min-w-32"
-            >
-              <p class="text-gray-400 text-sm font-medium">5y</p>
+            <div class="grid gap-1 text-right min-w-32">
+              <p class="text-gray-300 text-sm font-medium">5y</p>
               <p
                 class="text-2xl tabular-nums"
                 :class="{
