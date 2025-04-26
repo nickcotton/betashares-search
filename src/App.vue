@@ -119,8 +119,8 @@ watch([currentPage, sort], ([page, s]) => {
   router.replace({
     query: {
       ...route.query,
-      page: String(page),
-      sort: s,
+      page: String(page) === '1' ? undefined : String(page),
+      sort: s === 'symbol.asc' ? undefined : s,
     },
   })
 
@@ -150,7 +150,6 @@ const submitSearch = () => {
     query: {
       ...route.query,
       q: query.value,
-      page: '1',
     },
   })
   search(params)
