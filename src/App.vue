@@ -11,7 +11,15 @@
       ></Input>
       <Button @click="submitSearch">Search</Button>
     </div>
-    <SearchFilters v-model:sort="sort"></SearchFilters>
+    <SearchFilters
+      v-model:sort="sort"
+      v-model:selected-categories="selectedCategories"
+      v-model:selected-tags="selectedTags"
+      :categories
+      :tags
+      :inert="filtersDisabled"
+      :class="{ 'opacity-50': filtersDisabled }"
+    ></SearchFilters>
     <div v-if="loading" class="text-center">
       <ul class="grid gap-3">
         <li v-for="num in PAGE_SIZE" class="h-31 bg-white rounded-xl"></li>
@@ -89,6 +97,7 @@ import BetasharesLogo from '@/assets/logo.svg'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useSearch } from '@/composables/useSearch'
+import { useFilters } from '@/composables/useFilters'
 import debounce from './utils/debounce'
 import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -100,16 +109,27 @@ const router = useRouter()
 const query = ref(route.query.q?.toString() || '')
 const currentPage = ref(Number(route.query.page) || 1)
 const sort = ref(route.query.sort?.toString() || 'symbol.asc')
+const selectedCategories = ref<string[]>([])
+const selectedTags = ref<string[]>([])
 const PAGE_SIZE = 15
 
 const { loading, results, total, search } = useSearch()
 
-watch([currentPage, sort], ([page, s]) => {
+watch([currentPage, sort, selectedCategories, selectedTags], ([page, s]) => {
   const params = {
     search_text: query.value,
     from: page,
     size: PAGE_SIZE,
     order_by: s,
+  }
+
+  // Add filters
+  if (selectedCategories.value.length && !selectedCategories.value.includes('all')) {
+    params.categories = selectedCategories.value
+  }
+
+  if (selectedTags.value.length && !selectedTags.value.includes('all')) {
+    params.tags = selectedTags.value
   }
 
   router.replace({
@@ -121,6 +141,15 @@ watch([currentPage, sort], ([page, s]) => {
   })
 
   search(params)
+})
+
+const { categories, tags, extractFilters } = useFilters()
+
+// After search results come back:
+watch(results, (newResults) => {
+  if (newResults.length) {
+    extractFilters(newResults)
+  }
 })
 
 const debouncedSearch = debounce((value: string) => {
@@ -184,4 +213,8 @@ const prevPage = () => {
     currentPage.value -= 1
   }
 }
+
+const filtersDisabled = computed(() => {
+  return loading.value || !results.value?.length
+})
 </script>
