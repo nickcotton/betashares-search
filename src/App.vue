@@ -8,10 +8,12 @@
           v-model="query"
           @input="handleSearchInput"
           @keydown.enter="submitSearch"
+          @focus="searchInputFocused = true"
+          @blur="handleBlur"
           placeholder="Search for a name, symbol or keyword, e.g. ASX"
         ></Input>
         <ul
-          v-if="filteredSuggestions.length"
+          v-if="filteredSuggestions.length && searchInputFocused"
           class="absolute top-full bg-white rounded-md shadow-md mt-2 max-h-64 w-96 overflow-auto"
         >
           <li
@@ -130,6 +132,7 @@ const selectedCategories = ref<string[]>(
 )
 const selectedTags = ref<string[]>(route.query.tags ? (route.query.tags as string).split(',') : [])
 const PAGE_SIZE = 15
+const searchInputFocused = ref(false)
 
 const { loading, results, total, search } = useSearch()
 
@@ -281,4 +284,11 @@ const prevPage = () => {
 const filtersDisabled = computed(() => {
   return loading.value || !results.value?.length
 })
+
+const handleBlur = () => {
+  // Tiny delay to allow click events to fire
+  setTimeout(() => {
+    searchInputFocused.value = false
+  }, 100)
+}
 </script>
