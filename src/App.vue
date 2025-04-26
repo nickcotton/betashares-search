@@ -11,6 +11,7 @@
       ></Input>
       <Button @click="submitSearch">Search</Button>
     </div>
+    <SearchFilters v-model:sort="sort"></SearchFilters>
     <div v-if="loading" class="text-center">
       <ul class="grid gap-3">
         <li v-for="num in PAGE_SIZE" class="h-31 bg-white rounded-xl"></li>
@@ -95,27 +96,31 @@ import { useSearch } from '@/composables/useSearch'
 import debounce from './utils/debounce'
 import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import SearchFilters from '@/components/SearchFilters.vue'
 import SearchResultsPagination from '@/components/SearchResultsPagination.vue'
 
 const route = useRoute()
 const router = useRouter()
 const query = ref(route.query.q?.toString() || '')
 const currentPage = ref(Number(route.query.page) || 1)
+const sort = ref(route.query.sort?.toString() || 'symbol.asc')
 const PAGE_SIZE = 15
 
 const { loading, results, total, search } = useSearch()
 
-watch(currentPage, (page) => {
+watch([currentPage, sort], ([page, s]) => {
   const params = {
     search_text: query.value,
     from: page,
     size: PAGE_SIZE,
+    order_by: s,
   }
 
   router.replace({
     query: {
       ...route.query,
       page: String(page),
+      sort: s,
     },
   })
 
@@ -138,6 +143,7 @@ const submitSearch = () => {
     search_text: query.value,
     from: 1,
     size: PAGE_SIZE,
+    order_by: sort.value,
   }
 
   router.replace({
