@@ -109,8 +109,10 @@ const router = useRouter()
 const query = ref(route.query.q?.toString() || '')
 const currentPage = ref(Number(route.query.page) || 1)
 const sort = ref(route.query.sort?.toString() || 'symbol.asc')
-const selectedCategories = ref<string[]>([])
-const selectedTags = ref<string[]>([])
+const selectedCategories = ref<string[]>(
+  route.query.categories ? (route.query.categories as string).split(',') : [],
+)
+const selectedTags = ref<string[]>(route.query.tags ? (route.query.tags as string).split(',') : [])
 const PAGE_SIZE = 15
 
 const { loading, results, total, search } = useSearch()
@@ -123,7 +125,6 @@ watch([currentPage, sort, selectedCategories, selectedTags], ([page, s]) => {
     order_by: s,
   }
 
-  // Add filters
   if (selectedCategories.value.length && !selectedCategories.value.includes('all')) {
     params.categories = selectedCategories.value
   }
@@ -137,6 +138,8 @@ watch([currentPage, sort, selectedCategories, selectedTags], ([page, s]) => {
       ...route.query,
       page: String(page) === '1' ? undefined : String(page),
       sort: s === 'symbol.asc' ? undefined : s,
+      categories: selectedCategories.value.length ? selectedCategories.value.join(',') : undefined,
+      tags: selectedTags.value.length ? selectedTags.value.join(',') : undefined,
     },
   })
 
@@ -171,10 +174,21 @@ const submitSearch = () => {
     order_by: sort.value,
   }
 
+  if (selectedCategories.value.length && !selectedCategories.value.includes('all')) {
+    params.categories = selectedCategories.value
+  }
+
+  if (selectedTags.value.length && !selectedTags.value.includes('all')) {
+    params.tags = selectedTags.value
+  }
+
   router.replace({
     query: {
-      ...route.query,
-      q: query.value,
+      q: query.value || undefined,
+      page: undefined,
+      sort: sort.value !== 'symbol.asc' ? sort.value : undefined,
+      categories: selectedCategories.value.length ? selectedCategories.value.join(',') : undefined,
+      tags: selectedTags.value.length ? selectedTags.value.join(',') : undefined,
     },
   })
   search(params)
