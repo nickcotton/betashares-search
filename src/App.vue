@@ -30,6 +30,7 @@
       v-model:sort="sort"
       v-model:selected-categories="selectedCategories"
       v-model:selected-tags="selectedTags"
+      v-model:management-fee="managementFee"
       :categories
       :tags
       :inert="filtersDisabled"
@@ -128,17 +129,20 @@ const selectedCategories = ref<string[]>(
   route.query.categories ? (route.query.categories as string).split(',') : [],
 )
 const selectedTags = ref<string[]>(route.query.tags ? (route.query.tags as string).split(',') : [])
+const managementFee = ref([0.01, 2.54])
 const PAGE_SIZE = 15
 const searchInputFocused = ref(false)
 
 const { loading, results, total, search } = useSearch()
 
-watch([currentPage, sort, selectedCategories, selectedTags], ([page, s]) => {
+watch([currentPage, sort, selectedCategories, selectedTags, managementFee], ([page, s]) => {
   const params = {
     search_text: query.value,
     from: page,
     size: PAGE_SIZE,
     order_by: s,
+    management_fee_min: managementFee.value[0],
+    management_fee_max: managementFee.value[1],
   }
 
   if (selectedCategories.value.length && !selectedCategories.value.includes('all')) {
@@ -156,6 +160,10 @@ watch([currentPage, sort, selectedCategories, selectedTags], ([page, s]) => {
       sort: s === 'symbol.asc' ? undefined : s,
       categories: selectedCategories.value.length ? selectedCategories.value.join(',') : undefined,
       tags: selectedTags.value.length ? selectedTags.value.join(',') : undefined,
+      management_fee_min:
+        managementFee.value[0] !== 0.01 ? managementFee.value[0].toFixed(2) : undefined,
+      management_fee_max:
+        managementFee.value[1] !== 2.54 ? managementFee.value[1].toFixed(2) : undefined,
     },
   })
 
@@ -210,6 +218,8 @@ const submitSearch = () => {
     from: 1,
     size: PAGE_SIZE,
     order_by: sort.value,
+    management_fee_min: managementFee.value[0],
+    management_fee_max: managementFee.value[1],
   }
 
   if (selectedCategories.value.length && !selectedCategories.value.includes('all')) {
@@ -227,6 +237,10 @@ const submitSearch = () => {
       sort: sort.value !== 'symbol.asc' ? sort.value : undefined,
       categories: selectedCategories.value.length ? selectedCategories.value.join(',') : undefined,
       tags: selectedTags.value.length ? selectedTags.value.join(',') : undefined,
+      management_fee_min:
+        managementFee.value[0] !== 0.01 ? managementFee.value[0].toFixed(2) : undefined,
+      management_fee_max:
+        managementFee.value[1] !== 2.54 ? managementFee.value[1].toFixed(2) : undefined,
     },
   })
   search(params)
