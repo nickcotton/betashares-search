@@ -38,7 +38,7 @@
     ></SearchFilters>
     <div v-if="loading" class="text-center">
       <ul class="grid gap-3">
-        <li v-for="num in PAGE_SIZE" class="h-31 bg-white rounded-xl"></li>
+        <li v-for="num in PAGE_SIZE" :key="num" class="h-31 bg-white rounded-xl"></li>
       </ul>
     </div>
     <div v-else-if="results?.length === 0" class="text-center">
@@ -61,7 +61,7 @@
               <p v-if="result.flagship_description_short" class="text-gray-400 text-sm mt-2">
                 {{ result.flagship_description_short }}
               </p>
-              <p v-if="result.tags.length" class="flex gap-2 items-center mt-4">
+              <p v-if="result.tags?.length" class="flex gap-2 items-center mt-4">
                 <span class="text-gray-400 text-sm">Tags:</span>
                 <span
                   v-for="tag in result.tags"
@@ -145,8 +145,19 @@ const searchInputFocused = ref(false)
 
 const { loading, results, total, search } = useSearch()
 
+interface SearchParams {
+  search_text: string
+  from: number
+  size: number
+  order_by: string
+  management_fee_min: number
+  management_fee_max: number
+  categories?: string[]
+  tags?: string[]
+}
+
 watch([currentPage, sort, selectedCategories, selectedTags, managementFee], ([page, s]) => {
-  const params = {
+  const params: SearchParams = {
     search_text: query.value,
     from: page,
     size: PAGE_SIZE,
@@ -223,7 +234,7 @@ const highlightMatch = (suggestion: string) => {
 }
 
 const submitSearch = () => {
-  const params = {
+  const params: SearchParams = {
     search_text: query.value,
     from: 1,
     size: PAGE_SIZE,

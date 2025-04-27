@@ -62,7 +62,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
