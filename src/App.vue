@@ -53,13 +53,23 @@
           :key="result.symbol"
         >
           <div class="flex items-start gap-4">
-            <div class="flex-1 flex flex-col gap-1">
-              <p class="self-start bg-brand-orange text-white text-sm px-2 py-0.5 rounded-xs">
+            <div class="flex-1 flex flex-col">
+              <p class="self-start bg-brand-orange text-white text-sm px-2 py-0.5 rounded-xs mb-2">
                 {{ result.symbol }}
               </p>
               <h2 class="text-2xl">{{ result.display_name }}</h2>
-              <p v-if="result.flagship_description_short" class="text-gray-400 text-sm">
+              <p v-if="result.flagship_description_short" class="text-gray-400 text-sm mt-2">
                 {{ result.flagship_description_short }}
+              </p>
+              <p v-if="result.tags.length" class="flex gap-2 items-center mt-4">
+                <span class="text-gray-400 text-sm">Tags:</span>
+                <span
+                  v-for="tag in result.tags"
+                  :key="tag"
+                  class="inline-flex items-center rounded border bg-orange-50 border-orange-200 px-2.5 py-0.5 text-xs font-semibold transition-colors text-orange-500"
+                >
+                  {{ tag }}
+                </span>
               </p>
             </div>
             <div class="grid gap-1 text-right min-w-32">
