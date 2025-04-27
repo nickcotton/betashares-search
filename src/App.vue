@@ -81,8 +81,8 @@
               <p
                 class="text-2xl tabular-nums"
                 :class="{
-                  'text-green-600': result.one_year_return > 0,
-                  'text-red-600': result.one_year_return < 0,
+                  'text-green-600': result.one_year_return ?? 0 > 0,
+                  'text-red-600': result.one_year_return ?? 0 < 0,
                 }"
               >
                 {{ formatPerformance(result.one_year_return) }}
@@ -93,8 +93,8 @@
               <p
                 class="text-2xl tabular-nums"
                 :class="{
-                  'text-green-600': result.five_year_return > 0,
-                  'text-red-600': result.five_year_return < 0,
+                  'text-green-600': result.five_year_return ?? 0 > 0,
+                  'text-red-600': result.five_year_return ?? 0 < 0,
                 }"
               >
                 {{ formatPerformance(result.five_year_return) }}
@@ -272,7 +272,7 @@ const formatSize = (value: string | null | undefined): string => {
   return '$' + size.toFixed(2)
 }
 
-const formatPerformance = (value: string) => {
+const formatPerformance = (value: string | null) => {
   if (value === null || value === undefined) return 'N/A'
   return parseFloat(value).toFixed(2) + '%'
 }

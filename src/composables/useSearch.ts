@@ -1,11 +1,22 @@
 // src/composables/useSearch.js
 import { ref } from 'vue'
 
+interface SearchResult {
+  symbol: string
+  display_name: string
+  fund_size: string | null
+  one_year_return: string | null
+  five_year_return: string | null
+  flagship_description_short?: string | null
+  tags?: string[]
+  categories?: string[]
+}
+
 const API_URL = '/api/search'
 
 export function useSearch() {
   const loading = ref(false)
-  const results = ref(null)
+  const results = ref<SearchResult[]>([])
   const total = ref(0)
 
   const search = async (params = {}) => {
